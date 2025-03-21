@@ -16,7 +16,7 @@ const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("user");
+  const [selectedRole, setSelectedRole] = useState<UserRole | "">("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -45,24 +45,42 @@ const Login = () => {
   };
 
   // Role selection cards
-  const roleOptions: { id: UserRole; title: string; description: string; icon: React.ReactNode }[] = [
+  const roleOptions: { id: UserRole; title: string; description: string; icon: React.ReactNode; features: string[] }[] = [
     {
       id: "user",
       title: "User Portal",
       description: "Access your eco-friendly dashboard and track your sustainability metrics",
-      icon: <User className="size-5" />
+      icon: <User className="size-5" />,
+      features: [
+        "Upload waste photos and request pickups",
+        "Track eco-points and rewards",
+        "View recycling history",
+        "Join community events"
+      ]
     },
     {
       id: "staff",
       title: "Staff Portal",
       description: "Manage resources and monitor environmental impact metrics",
-      icon: <Users className="size-5" />
+      icon: <Users className="size-5" />,
+      features: [
+        "Accept and manage waste pickups",
+        "Verify waste collections with OTP",
+        "Track daily earnings and collections",
+        "Manage pickup schedules"
+      ]
     },
     {
       id: "admin",
       title: "Admin Portal",
       description: "Configure system-wide sustainability policies and analyze impact data",
-      icon: <ShieldCheck className="size-5" />
+      icon: <ShieldCheck className="size-5" />,
+      features: [
+        "Manage users and staff accounts",
+        "View comprehensive analytics",
+        "Configure system settings",
+        "Monitor all waste collections"
+      ]
     }
   ];
 
@@ -100,9 +118,25 @@ const Login = () => {
                       </div>
                       <h3 className="font-medium text-green-700">{role.title}</h3>
                       <p className="text-sm text-green-600 mt-1">{role.description}</p>
+                      
+                      <div className="mt-4 pt-3 border-t border-green-100 w-full">
+                        <p className="text-sm font-medium text-green-700 mb-2">Features:</p>
+                        <ul className="text-xs text-left space-y-1.5">
+                          {role.features.map((feature, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <span className="text-green-500 mr-1.5">•</span>
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 ))}
+              </div>
+              
+              <div className="mt-6 text-center text-sm text-muted-foreground">
+                <p>For demonstration purposes, you can log in with any email and password.</p>
               </div>
             </div>
           ) : (
@@ -114,7 +148,7 @@ const Login = () => {
                 </h2>
                 <button 
                   type="button" 
-                  onClick={() => setSelectedRole("user")}
+                  onClick={() => setSelectedRole("")}
                   className="text-sm text-green-600 hover:underline"
                 >
                   Change Portal
