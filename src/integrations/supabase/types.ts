@@ -9,7 +9,104 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          eco_points: number
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          eco_points?: number
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          eco_points?: number
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      waste_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          points_per_kg: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          points_per_kg?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          points_per_kg?: number
+        }
+        Relationships: []
+      }
+      waste_uploads: {
+        Row: {
+          category_id: string
+          created_at: string
+          id: string
+          image_url: string | null
+          points_earned: number | null
+          status: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+          weight_kg: number | null
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          points_earned?: number | null
+          status?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+          weight_kg?: number | null
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          points_earned?: number | null
+          status?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waste_uploads_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "waste_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

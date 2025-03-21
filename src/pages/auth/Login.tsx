@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Leaf, Mail, Lock, User, Users, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { GlassCard } from "@/components/ui-custom/GlassCard";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Role type definition
 type UserRole = "user" | "staff" | "admin";
@@ -19,29 +20,48 @@ const Login = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole | "">("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn, user } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      const role = user.user_metadata?.role || "user";
+      if (role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (role === "staff") {
+        navigate("/staff/dashboard");
+      } else {
+        navigate("/user/dashboard");
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email || !password) {
+      toast.error("Please enter your email and password");
+      return;
+    }
+    
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      if (email && password) {
-        toast.success(`Logged in successfully as ${selectedRole}`);
-        
-        // Navigate based on role
-        if (selectedRole === "user") {
-          navigate("/user/dashboard");
-        } else if (selectedRole === "staff") {
-          navigate("/staff/dashboard");
-        } else if (selectedRole === "admin") {
-          navigate("/admin/dashboard");
-        }
-      } else {
-        toast.error("Please enter your email and password");
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        toast.error(error.message || "Invalid email or password");
+        setIsLoading(false);
+        return;
       }
-    }, 1500);
+      
+      // Authentication successful - the redirect will happen automatically
+      // via the useEffect when the user state updates
+      toast.success("Logged in successfully");
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
+      setIsLoading(false);
+    }
   };
 
   // Role selection cards
