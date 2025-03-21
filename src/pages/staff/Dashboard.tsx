@@ -132,47 +132,52 @@ const completedPickups = [
   }
 ];
 
-// Define a union type for all pickup types to help TypeScript understand the structure
-type PickupRequest = {
+// Define better types with common properties at the top level and specific ones in a discriminated union
+type BasePickup = {
   id: number;
   userName: string;
   userAddress: string;
   wasteType: string;
+  status: string;
+  timeSlot: string;
+  userImage: string;
+};
+
+type PickupRequest = BasePickup & {
+  status: "pending";
   dateRequested: string;
-  status: string;
-  timeSlot: string;
   distance: string;
   estimatedPoints: number;
-  userImage: string;
 };
 
-type ScheduledPickup = {
-  id: number;
-  userName: string;
-  userAddress: string;
-  wasteType: string;
+type ScheduledPickup = BasePickup & {
+  status: "scheduled" | "in-progress";
   date: string;
-  status: string;
-  timeSlot: string;
   distance: string;
   estimatedPoints: number;
-  userImage: string;
 };
 
-type CompletedPickup = {
-  id: number;
-  userName: string;
-  userAddress: string;
-  wasteType: string;
+type CompletedPickup = BasePickup & {
+  status: "completed";
   date: string;
-  status: string;
-  timeSlot: string;
   finalWeight: string;
   finalPoints: number;
-  userImage: string;
 };
 
 type Pickup = PickupRequest | ScheduledPickup | CompletedPickup;
+
+// Type guards to check which type of pickup we're dealing with
+const isPendingPickup = (pickup: Pickup): pickup is PickupRequest => {
+  return pickup.status === "pending";
+};
+
+const isScheduledPickup = (pickup: Pickup): pickup is ScheduledPickup => {
+  return pickup.status === "scheduled" || pickup.status === "in-progress";
+};
+
+const isCompletedPickup = (pickup: Pickup): pickup is CompletedPickup => {
+  return pickup.status === "completed";
+};
 
 const StaffDashboard = () => {
   const [selectedPickup, setSelectedPickup] = useState<Pickup | null>(null);
@@ -183,7 +188,7 @@ const StaffDashboard = () => {
   const [isProcessingOtp, setIsProcessingOtp] = useState(false);
   
   // Combine all pickups and filter based on status if needed
-  const allPickups = [...pickupRequests, ...scheduledPickups, ...completedPickups];
+  const allPickups = [...pickupRequests, ...scheduledPickups, ...completedPickups] as Pickup[];
   const filteredPickups = filterStatus === "all" 
     ? allPickups 
     : allPickups.filter(pickup => pickup.status === filterStatus);
@@ -242,6 +247,15 @@ const StaffDashboard = () => {
       year: 'numeric' 
     };
     return new Date(dateString).toLocaleDateString('en-US', options);
+  };
+
+  const getDisplayDate = (pickup: Pickup): string => {
+    if (isPendingPickup(pickup)) {
+      return formatDate(pickup.dateRequested);
+    } else if (isScheduledPickup(pickup) || isCompletedPickup(pickup)) {
+      return formatDate(pickup.date);
+    }
+    return "";
   };
 
   const getStatusBadge = (status: string) => {
@@ -452,11 +466,9 @@ const StaffDashboard = () => {
                             </div>
                             <div className="text-right">
                               {getStatusBadge(pickup.status)}
-                              
-        <div className="text-xs text-muted-foreground mt-1">
-          {pickup.date ? formatDate(pickup.date) : 
-           pickup.dateRequested ? formatDate(pickup.dateRequested) : ""}
-        </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {getDisplayDate(pickup)}
+                              </div>
                             </div>
                           </div>
                           <div className="flex flex-wrap items-center justify-between text-sm mt-3">
@@ -533,25 +545,25 @@ const StaffDashboard = () => {
                   <span className="font-medium">{selectedPickup.wasteType}</span>
                 </div>
                 
-      <div className="flex justify-between">
-        <span className="text-muted-foreground">Date:</span>
-        <span className="font-medium">
-          {selectedPickup && ('date' in selectedPickup 
-            ? formatDate(selectedPickup.date) 
-            : 'dateRequested' in selectedPickup 
-              ? formatDate(selectedPickup.dateRequested) 
-              : "")}
-        </span>
-      </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Date:</span>
+                  <span className="font-medium">
+                    {getDisplayDate(selectedPickup)}
+                  </span>
+                </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Time Slot:</span>
                   <span className="font-medium">{selectedPickup.timeSlot}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Distance:</span>
-                  <span className="font-medium">{selectedPickup.distance}</span>
-                </div>
-                {selectedPickup.status === "completed" ? (
+                
+                {(isPendingPickup(selectedPickup) || isScheduledPickup(selectedPickup)) && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Distance:</span>
+                    <span className="font-medium">{selectedPickup.distance}</span>
+                  </div>
+                )}
+                
+                {isCompletedPickup(selectedPickup) && (
                   <>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Final Weight:</span>
@@ -562,7 +574,9 @@ const StaffDashboard = () => {
                       <span className="font-medium">{selectedPickup.finalPoints} points</span>
                     </div>
                   </>
-                ) : (
+                )}
+                
+                {(isPendingPickup(selectedPickup) || isScheduledPickup(selectedPickup)) && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Estimated Points:</span>
                     <span className="font-medium">~{selectedPickup.estimatedPoints} points</span>
@@ -682,3 +696,4 @@ const StaffDashboard = () => {
 };
 
 export default StaffDashboard;
+
