@@ -132,8 +132,50 @@ const completedPickups = [
   }
 ];
 
+// Define a union type for all pickup types to help TypeScript understand the structure
+type PickupRequest = {
+  id: number;
+  userName: string;
+  userAddress: string;
+  wasteType: string;
+  dateRequested: string;
+  status: string;
+  timeSlot: string;
+  distance: string;
+  estimatedPoints: number;
+  userImage: string;
+};
+
+type ScheduledPickup = {
+  id: number;
+  userName: string;
+  userAddress: string;
+  wasteType: string;
+  date: string;
+  status: string;
+  timeSlot: string;
+  distance: string;
+  estimatedPoints: number;
+  userImage: string;
+};
+
+type CompletedPickup = {
+  id: number;
+  userName: string;
+  userAddress: string;
+  wasteType: string;
+  date: string;
+  status: string;
+  timeSlot: string;
+  finalWeight: string;
+  finalPoints: number;
+  userImage: string;
+};
+
+type Pickup = PickupRequest | ScheduledPickup | CompletedPickup;
+
 const StaffDashboard = () => {
-  const [selectedPickup, setSelectedPickup] = useState<any | null>(null);
+  const [selectedPickup, setSelectedPickup] = useState<Pickup | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [otpDialogOpen, setOtpDialogOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -156,7 +198,7 @@ const StaffDashboard = () => {
     .filter(p => new Date(p.date).toDateString() === new Date().toDateString())
     .reduce((sum, p) => sum + (p.finalPoints || 0) * 0.1, 0); // $0.10 per point
 
-  const handlePickupSelect = (pickup: any) => {
+  const handlePickupSelect = (pickup: Pickup) => {
     setSelectedPickup(pickup);
     setDetailsDialogOpen(true);
   };
@@ -494,11 +536,11 @@ const StaffDashboard = () => {
       <div className="flex justify-between">
         <span className="text-muted-foreground">Date:</span>
         <span className="font-medium">
-          {selectedPickup?.date 
+          {selectedPickup && ('date' in selectedPickup 
             ? formatDate(selectedPickup.date) 
-            : selectedPickup?.dateRequested 
+            : 'dateRequested' in selectedPickup 
               ? formatDate(selectedPickup.dateRequested) 
-              : ""}
+              : "")}
         </span>
       </div>
                 <div className="flex justify-between">
