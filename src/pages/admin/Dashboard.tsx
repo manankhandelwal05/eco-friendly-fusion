@@ -22,6 +22,7 @@ import {
   XCircle,
   ListFilter,
   FileText,
+  MoreVertical as MoreVerticalIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -730,4 +731,3 @@ const AdminDashboard = () => {
                       <DialogFooter>
                         <Button variant="outline" onClick={() => setShowUpdateCategoryDialog(false)}>Cancel</Button>
                         <Button onClick={handleUpdateCategory}>{selectedCategory ? "Update" : "Add"} Category</Button>
-                      </DialogFooter>
