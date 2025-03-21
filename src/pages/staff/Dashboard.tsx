@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Truck, 
@@ -411,9 +410,11 @@ const StaffDashboard = () => {
                             </div>
                             <div className="text-right">
                               {getStatusBadge(pickup.status)}
-                              <div className="text-xs text-muted-foreground mt-1">
-                                {pickup.date ? formatDate(pickup.date) : formatDate(pickup.dateRequested)}
-                              </div>
+                              
+        <div className="text-xs text-muted-foreground mt-1">
+          {pickup.date ? formatDate(pickup.date) : 
+           pickup.dateRequested ? formatDate(pickup.dateRequested) : ""}
+        </div>
                             </div>
                           </div>
                           <div className="flex flex-wrap items-center justify-between text-sm mt-3">
@@ -489,14 +490,17 @@ const StaffDashboard = () => {
                   <span className="text-muted-foreground">Waste Type:</span>
                   <span className="font-medium">{selectedPickup.wasteType}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Date:</span>
-                  <span className="font-medium">
-                    {selectedPickup.date 
-                      ? formatDate(selectedPickup.date) 
-                      : formatDate(selectedPickup.dateRequested)}
-                  </span>
-                </div>
+                
+      <div className="flex justify-between">
+        <span className="text-muted-foreground">Date:</span>
+        <span className="font-medium">
+          {selectedPickup?.date 
+            ? formatDate(selectedPickup.date) 
+            : selectedPickup?.dateRequested 
+              ? formatDate(selectedPickup.dateRequested) 
+              : ""}
+        </span>
+      </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Time Slot:</span>
                   <span className="font-medium">{selectedPickup.timeSlot}</span>

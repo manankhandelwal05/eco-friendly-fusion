@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -64,8 +63,7 @@ export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   
-  // Current user role - would normally come from auth context
-  const userRole = "user"; // "user", "staff", or "admin"
+  const userRole = "user" as "user" | "staff" | "admin";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,7 +117,6 @@ export const Header = () => {
       )}
     >
       <div className="container flex items-center justify-between h-16 px-4 md:px-6">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <div className="size-8 rounded-full bg-primary text-primary-foreground grid place-items-center">
             <Leaf className="size-4" />
@@ -127,7 +124,6 @@ export const Header = () => {
           <span className="font-semibold text-xl hidden sm:inline-block">EcoRecycle</span>
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6">
           <NavigationMenu>
             <NavigationMenuList>
@@ -149,17 +145,13 @@ export const Header = () => {
           </NavigationMenu>
         </div>
 
-        {/* User Menu */}
         <div className="flex items-center gap-3">
-          {/* Eco Points */}
           <EcoPointsBadge points={250} className="hidden sm:flex" />
           
-          {/* Notifications */}
           <Button variant="ghost" size="icon" className="rounded-full">
             <Bell className="size-5" />
           </Button>
           
-          {/* User Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="rounded-full p-0 h-10 w-10">
@@ -203,13 +195,11 @@ export const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Mobile Menu Toggle */}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             <Menu className="size-5" />
           </Button>
         </div>
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="fixed inset-0 top-16 z-50 bg-background/95 backdrop-blur-sm animate-fade-in md:hidden">
             <div className="container p-4 pt-6 max-h-[calc(100vh-4rem)] overflow-y-auto animate-slide-down">

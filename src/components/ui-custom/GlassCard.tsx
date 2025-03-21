@@ -9,6 +9,7 @@ interface GlassCardProps {
   footerContent?: React.ReactNode;
   headerContent?: React.ReactNode;
   hoverable?: boolean;
+  style?: React.CSSProperties;
 }
 
 export const GlassCard = ({
@@ -17,6 +18,7 @@ export const GlassCard = ({
   footerContent,
   headerContent,
   hoverable = false,
+  style,
 }: GlassCardProps) => {
   return (
     <Card 
@@ -26,6 +28,7 @@ export const GlassCard = ({
         hoverable && "hover:shadow-lg hover:translate-y-[-2px]",
         className
       )}
+      style={style}
     >
       {headerContent && <CardHeader className="p-5">{headerContent}</CardHeader>}
       <CardContent className={cn("p-5", !headerContent && "pt-5")}>
