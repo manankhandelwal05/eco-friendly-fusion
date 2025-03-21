@@ -21,8 +21,9 @@ export const GlassCard = ({
   return (
     <Card 
       className={cn(
-        "glass border-none rounded-xl overflow-hidden transition-all duration-300",
-        hoverable && "hover:shadow-hover hover:translate-y-[-2px]",
+        "border border-green-100/50 rounded-xl overflow-hidden transition-all duration-300 shadow-md",
+        "bg-white/80 backdrop-blur-sm",
+        hoverable && "hover:shadow-lg hover:translate-y-[-2px]",
         className
       )}
     >

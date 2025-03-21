@@ -22,13 +22,14 @@ import StaffDashboard from "./pages/staff/Dashboard";
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
 
+// Create a client
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner theme="light" className="eco-toast" />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

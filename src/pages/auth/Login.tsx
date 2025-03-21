@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Leaf, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Leaf, Mail, Lock, User, Users, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,10 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { GlassCard } from "@/components/ui-custom/GlassCard";
 import { toast } from "sonner";
 
+// Role type definition
+type UserRole = "user" | "staff" | "admin";
+
 const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("user");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,113 +28,181 @@ const Login = () => {
     setTimeout(() => {
       setIsLoading(false);
       if (email && password) {
-        toast.success("Logged in successfully");
-        navigate("/user/dashboard");
+        toast.success(`Logged in successfully as ${selectedRole}`);
+        
+        // Navigate based on role
+        if (selectedRole === "user") {
+          navigate("/user/dashboard");
+        } else if (selectedRole === "staff") {
+          navigate("/staff/dashboard");
+        } else if (selectedRole === "admin") {
+          navigate("/admin/dashboard");
+        }
       } else {
         toast.error("Please enter your email and password");
       }
     }, 1500);
   };
 
+  // Role selection cards
+  const roleOptions: { id: UserRole; title: string; description: string; icon: React.ReactNode }[] = [
+    {
+      id: "user",
+      title: "User Portal",
+      description: "Access your eco-friendly dashboard and track your sustainability metrics",
+      icon: <User className="size-5" />
+    },
+    {
+      id: "staff",
+      title: "Staff Portal",
+      description: "Manage resources and monitor environmental impact metrics",
+      icon: <Users className="size-5" />
+    },
+    {
+      id: "admin",
+      title: "Admin Portal",
+      description: "Configure system-wide sustainability policies and analyze impact data",
+      icon: <ShieldCheck className="size-5" />
+    }
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted/50">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-50 to-emerald-100 bg-cover bg-center" 
+         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80')" }}>
+      <div className="w-full max-w-3xl">
         <div className="text-center mb-8 animate-fade-in">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="size-10 rounded-full bg-primary text-primary-foreground grid place-items-center">
+            <div className="size-10 rounded-full bg-green-600 text-white grid place-items-center">
               <Leaf className="size-5" />
             </div>
-            <span className="font-semibold text-2xl">EcoRecycle</span>
+            <span className="font-semibold text-2xl text-green-700">EcoSystem</span>
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
-          <p className="text-muted-foreground">
-            Sign in to your account to continue
+          <h1 className="text-3xl font-bold mb-2 text-green-800">Sustainable Management System</h1>
+          <p className="text-green-700">
+            Powering a greener future through efficient resource management
           </p>
         </div>
 
-        <GlassCard className="animate-scale-in">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  disabled={isLoading}
-                />
+        <GlassCard className="animate-scale-in bg-white/80 backdrop-blur-sm">
+          {!selectedRole ? (
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-center mb-4 text-green-700">Select Your Portal</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {roleOptions.map((role) => (
+                  <div 
+                    key={role.id}
+                    onClick={() => setSelectedRole(role.id)}
+                    className="border border-green-200 rounded-lg p-4 cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all"
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className="size-12 rounded-full bg-green-100 grid place-items-center mb-3 text-green-600">
+                        {role.icon}
+                      </div>
+                      <h3 className="font-medium text-green-700">{role.title}</h3>
+                      <p className="text-sm text-green-600 mt-1">{role.description}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  to="/auth/forgot-password"
-                  className="text-sm text-primary hover:underline"
+          ) : (
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-green-700">
+                  {selectedRole === "user" ? "User Login" : 
+                   selectedRole === "staff" ? "Staff Login" : "Admin Login"}
+                </h2>
+                <button 
+                  type="button" 
+                  onClick={() => setSelectedRole("user")}
+                  className="text-sm text-green-600 hover:underline"
                 >
-                  Forgot password?
-                </Link>
+                  Change Portal
+                </button>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={isPasswordVisible ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10"
-                  disabled={isLoading}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground"
-                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                  disabled={isLoading}
-                >
-                  {isPasswordVisible ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </Button>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-green-700">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-2.5 h-5 w-5 text-green-500" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 border-green-200 focus-visible:ring-green-500"
+                    disabled={isLoading}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox id="remember" />
-              <Label htmlFor="remember" className="text-sm font-normal">
-                Remember me for 30 days
-              </Label>
-            </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-green-700">Password</Label>
+                  <Link
+                    to="/auth/forgot-password"
+                    className="text-sm text-green-600 hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-2.5 h-5 w-5 text-green-500" />
+                  <Input
+                    id="password"
+                    type={isPasswordVisible ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10 border-green-200 focus-visible:ring-green-500"
+                    disabled={isLoading}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 py-2 text-green-500"
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    disabled={isLoading}
+                  >
+                    {isPasswordVisible ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </Button>
+                </div>
+              </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? "Signing in..." : "Sign in"}
-            </Button>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="remember" className="text-green-600 border-green-400 data-[state=checked]:bg-green-600 data-[state=checked]:text-white" />
+                <Label htmlFor="remember" className="text-sm font-normal text-green-700">
+                  Remember me for 30 days
+                </Label>
+              </div>
 
-            <div className="text-center mt-6">
-              <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link
-                  to="/auth/register"
-                  className="text-primary hover:underline"
-                >
-                  Sign up
-                </Link>
-              </p>
-            </div>
-          </form>
+              <Button
+                type="submit"
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign in"}
+              </Button>
+
+              <div className="text-center mt-6">
+                <p className="text-sm text-green-700">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/auth/register"
+                    className="text-green-600 hover:underline font-medium"
+                  >
+                    Sign up
+                  </Link>
+                </p>
+              </div>
+            </form>
+          )}
         </GlassCard>
       </div>
     </div>
