@@ -78,7 +78,6 @@ import { GlassCard } from "@/components/ui-custom/GlassCard";
 import { EcoPointsBadge } from "@/components/ui-custom/EcoPointsBadge";
 import { toast } from "sonner";
 
-// Mock data for demonstrations
 const mockUsers = [
   { id: 1, name: "Alex Johnson", email: "alex@example.com", role: "user", status: "active", ecoPoints: 420, registeredDate: "2023-10-15", pickups: 12 },
   { id: 2, name: "Sam Wilson", email: "sam@example.com", role: "user", status: "active", ecoPoints: 280, registeredDate: "2023-09-22", pickups: 8 },
@@ -120,7 +119,6 @@ const mockWasteCategories = [
   { id: 6, name: "Organic", pointsPerKg: 3, totalCollected: 920, trend: "up" },
 ];
 
-// Mock stats for overview
 const mockStats = {
   totalUsers: 348,
   totalStaff: 12,
@@ -141,7 +139,6 @@ const AdminDashboard = () => {
   const [showUpdateCategoryDialog, setShowUpdateCategoryDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
 
-  // Handlers
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
@@ -198,7 +195,6 @@ const AdminDashboard = () => {
     setShowUpdateCategoryDialog(true);
   };
 
-  // Filter functions
   const filteredUsers = mockUsers.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -208,7 +204,6 @@ const AdminDashboard = () => {
     ? mockPickups.filter(pickup => pickup.wasteType.toLowerCase() === selectedWasteCategory.toLowerCase())
     : mockPickups;
 
-  // Sidebar menu items
   const sidebarMenuItems = [
     { id: "overview", label: "Overview", icon: BarChart4, active: activeTab === "overview" },
     { id: "users", label: "Users & Staff", icon: Users, active: activeTab === "users" },
@@ -219,7 +214,6 @@ const AdminDashboard = () => {
     { id: "settings", label: "Settings", icon: Settings, active: activeTab === "settings" },
   ];
 
-  // Admin dashboard layout with sidebar
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-gradient-to-br from-background to-muted/30">
@@ -285,7 +279,6 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            {/* Dashboard content based on active tab */}
             {activeTab === "overview" && (
               <div className="space-y-6 animate-fade-in">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -731,3 +724,47 @@ const AdminDashboard = () => {
                       <DialogFooter>
                         <Button variant="outline" onClick={() => setShowUpdateCategoryDialog(false)}>Cancel</Button>
                         <Button onClick={handleUpdateCategory}>{selectedCategory ? "Update" : "Add"} Category</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                
+                <GlassCard>
+                  <CardHeader>
+                    <CardTitle>Waste Categories</CardTitle>
+                    <CardDescription>
+                      Manage and track waste categories
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {mockWasteCategories.map(category => (
+                        <div key={category.id} className="space-y-2">
+                          <div className="flex justify-between">
+                            <div className="flex items-center">
+                              <Recycle className="h-4 w-4 mr-2 text-muted-foreground" />
+                              <span className="text-sm font-medium">{category.name}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-sm font-medium">{category.totalCollected} kg</span>
+                              {category.trend === "up" && <TrendingUp className="h-4 w-4 ml-1 text-green-500" />}
+                              {category.trend === "down" && <TrendingUp className="h-4 w-4 ml-1 text-red-500 rotate-180" />}
+                              {category.trend === "stable" && <TrendingUp className="h-4 w-4 ml-1 text-amber-500 rotate-90" />}
+                            </div>
+                          </div>
+                          <Progress value={(category.totalCollected / 1000) * 100} className="h-2" />
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </GlassCard>
+              </div>
+            )}
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
+  );
+};
+
+export default AdminDashboard;
